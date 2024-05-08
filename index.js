@@ -29,7 +29,12 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-response.json(persons)
+    if(persons){
+        response.json(persons)
+    }
+    else{
+        response.status(404).end()
+    }
 })
 
 app.get('/info',(request,response) => {
@@ -54,3 +59,5 @@ const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+
+// we have already implemented 3.3 with 3.1 
