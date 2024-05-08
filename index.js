@@ -29,8 +29,16 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+response.json(persons)
 })
+
+app.get('/info',(request,response) => {
+    let dateTime = new Date().toString()
+    dateTime = dateTime .substring(0, 25)
+    response.send(`Phonebook has info for ${persons.length} people <br/> <br/>
+    ${dateTime} GMT+0300 Eastern European Summer Time`)
+}
+)
 
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
