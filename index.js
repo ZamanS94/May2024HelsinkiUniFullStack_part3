@@ -1,5 +1,3 @@
-// online link https://may2024helsinkiunifullstack-part3-1.onrender.com/
-
 const express = require('express')
 var morgan = require('morgan')
 const cors = require('cors')
@@ -16,6 +14,7 @@ morgan.token('post_info', function (req, res) {
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post_info'))
 app.use(express.json())
 app.use(cors())
+app.use(express.static('dist'))
 
 
 let persons = [
