@@ -10,7 +10,6 @@ morgan.token('post_info', function (req, res) {
     } else return null
 })
 
-
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post_info'))
 app.use(express.json())
 app.use(cors())
@@ -91,8 +90,6 @@ app.get('/api/persons/:id', (request, response) => {
         response.status(404).end()
     }
 })
-
-
 
 
 const generateId = () => {
