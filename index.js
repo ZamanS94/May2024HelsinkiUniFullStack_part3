@@ -1,5 +1,6 @@
 const express = require('express')
 var morgan = require('morgan')
+const cors = require('cors')
 
 const app = express()
 
@@ -12,6 +13,8 @@ morgan.token('post_info', function (req, res) {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post_info'))
 app.use(express.json())
+app.use(cors())
+
 
 let persons = [
     { 
@@ -38,6 +41,11 @@ let persons = [
         "id": 5,
         "name": "Mary", 
         "number": "39-23-6423122"
+      },
+    { 
+        "id": 6,
+        "name": "Sabina", 
+        "number": "0000"
       }
 ]
 
@@ -72,12 +80,19 @@ app.get('/api/persons/:id', (request, response) => {
       }
   })
 
-app.delete('/api/persons/:id', (request, response) => {
+  app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-    console.log(persons)
-    response.status(204).end()
-  })
+    const personIndex = persons.findIndex(person => person.id === id)
+    if (personIndex !== -1) {
+        persons.splice(personIndex, 1)
+        response.status(204).end()
+    } else {
+        response.status(404).end()
+    }
+})
+
+
+
 
 const generateId = () => {
     const maxId = persons.length > 0 ? Math.max(...persons.map(n => n.id)) : 0
@@ -108,7 +123,7 @@ app.post('/api/persons', (request, response) => {
     response.json(persons)
   })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
