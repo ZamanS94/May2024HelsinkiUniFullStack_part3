@@ -13,8 +13,7 @@ mongoose.connect(MONGODB_URI, {
 
 const personSchema = new mongoose.Schema({
   name: String,
-  number: String,
-  id: String
+  number: String
 })
 
 personSchema.set('toJSON', {

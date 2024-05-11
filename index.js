@@ -32,6 +32,22 @@ app.get('/info', async (req, res) => {
   res.send(`Phonebook has info for ${personCount} people <br/> <br/> ${dateTime} GMT+0300 Eastern European Summer Time`)
 })
 
+app.post('/api/persons', async (request, response) => {
+
+  const body = request.body
+  if (!body.name || !body.number) return response.status(400).json({ error: "name or number missing" })
+    
+  const person = new Person({
+    name: body.name,
+    number: body.number
+  })
+
+  person.save().then(savedNote => {
+    response.json(savedNote)
+  })
+})
+
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
