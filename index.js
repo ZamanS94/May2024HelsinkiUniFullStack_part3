@@ -1,6 +1,10 @@
 const express = require('express')
 var morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person.js')
+const mongoose = require('mongoose')
+
+require('dotenv').config()
 
 const app = express()
 
@@ -15,113 +19,44 @@ app.use(express.json())
 app.use(cors())
 app.use(express.static('dist'))
 
+const password = process.argv[2]
+const url = process.env.MONGODB_URI
+const PORT = process.env.PORT || 3001
 
-let persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    },
-    { 
-        "id": 5,
-        "name": "Mary", 
-        "number": "39-23-6423122"
-      },
-    { 
-        "id": 6,
-        "name": "Sabina", 
-        "number": "0000"
-      }
-]
+mongoose.set('strictQuery',false)
 
+mongoose.connect(url)
+  .then(result => {
+    console.log('connected to MongoDB')
+  })
+  .catch(error => {
+    console.log('error connecting to MongoDB:', error.message)
+  })
+  
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
 
+
 app.get('/api/persons', (request, response) => {
-    if(persons){
-        response.json(persons)
+  Person.find({})
+  .then(persons => {
+    if (persons.length > 0) {
+      response.json(persons)
+    } else {
+      response.status(404).end()
     }
-    else{
-        response.status(404).end()
-    }
+  })
 })
 
-app.get('/info',(request,response) => {
+app.get('/info', async (request,response) => {
+    let personNo = await Person.countDocuments({})
     let dateTime = new Date().toString()
     dateTime = dateTime .substring(0, 25)
-    response.send(`Phonebook has info for ${persons.length} people <br/> <br/>
+    response.send(`Phonebook has info for ${personNo} people <br/> <br/>
     ${dateTime} GMT+0300 Eastern European Summer Time`)
-}
-)
-
-app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    if (person) {
-        response.json(person)
-      } else {
-        response.status(404).end()
-      }
-  })
-
-  app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const personIndex = persons.findIndex(person => person.id === id)
-    if (personIndex !== -1) {
-        persons.splice(personIndex, 1)
-        response.status(204).end()
-    } else {
-        response.status(404).end()
-    }
 })
 
-
-const generateId = () => {
-    const maxId = persons.length > 0 ? Math.max(...persons.map(n => n.id)) : 0
-    const randomPart = Math.floor(Math.random() * 1000) + 1
-    return maxId + randomPart
-}
-  
-app.post('/api/persons', (request, response) => {
-    const body = request.body
-
-    if (!body.name||!body.number) {
-      return response.status(400).json({ 
-        error: 'name or number missing' 
-      })
-    }
-    let doesExist = persons.find(person => person.name === body.name)
-
-    if(doesExist){
-        return response.status(422).json({ error: 'name must be unique' })
-    }
-    const personObject = {
-      name: body.name,
-      number: body.number,
-      id: generateId()
-    }
-  
-    persons = persons.concat(personObject)
-    response.json(persons)
-  })
-
-const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
