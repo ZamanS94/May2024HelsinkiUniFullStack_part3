@@ -36,7 +36,7 @@ app.post('/api/persons', async (request, response) => {
 
   const body = request.body
   if (!body.name || !body.number) return response.status(400).json({ error: "name or number missing" })
-    
+
   const person = new Person({
     name: body.name,
     number: body.number
@@ -47,6 +47,14 @@ app.post('/api/persons', async (request, response) => {
   })
 })
 
+
+app.delete('/api/persons/:id', (request, response) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      console.log(result)
+      response.status(204).end()
+    })
+})
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
