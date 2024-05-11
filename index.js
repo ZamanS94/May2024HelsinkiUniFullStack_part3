@@ -22,25 +22,14 @@ app.get('/api/persons', (req, res) => {
     .then(persons => {
       if (persons.length > 0) {
         res.json(persons)
-      } else {
-        res.status(404).end()
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching persons:', error)
-      res.status(500).json({ error: 'Internal server error' })
+      } else res.status(404).end()
     })
 })
 
 app.get('/info', async (req, res) => {
-  try {
-    const personCount = await Person.countDocuments({})
-    const dateTime = new Date().toString().substring(0, 25)
-    res.send(`Phonebook has info for ${personCount} people <br/> <br/> ${dateTime} GMT+0300 Eastern European Summer Time`)
-  } catch (error) {
-    console.error('Error fetching person count:', error)
-    res.status(500).json({ error: 'Internal server error' })
-  }
+  const personCount = await Person.countDocuments({})
+  const dateTime = new Date().toString().substring(0, 25)
+  res.send(`Phonebook has info for ${personCount} people <br/> <br/> ${dateTime} GMT+0300 Eastern European Summer Time`)
 })
 
 app.listen(PORT, () => {
