@@ -52,6 +52,7 @@ app.post('/api/persons', async (request, response, next) => {
       error.status = 400
       throw error
     }
+
     const person = new Person({
       name: body.name,
       number: body.number
@@ -62,6 +63,26 @@ app.post('/api/persons', async (request, response, next) => {
     next(error)
   }
 })
+
+app.put('/api/persons/:id', async (request, response, next) => {
+  try {
+    const body = request.body
+    const updatedPerson = await Person.findByIdAndUpdate(
+      request.params.id,
+      { $set: { name: body.name, number: body.number } },
+      { new: true }
+    )
+    if (updatedPerson) {
+      response.json({ success: true, data: updatedPerson })
+    }
+  } catch (error) {
+    next(error)
+  }
+})
+
+
+
+
 
 app.delete('/api/persons/:id', async (request, response, next) => {
   try {
