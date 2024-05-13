@@ -38,6 +38,21 @@ app.get('/api/persons', async (req, res, next) => {
   }
 })
 
+app.get('/api/persons/:id', async (req, res, next) => {
+  try {
+    singlePerson = await Person.findById(req.params.id)
+    if (singlePerson) {
+      res.json(singlePerson)
+    } else {
+      const error = new Error('Person not found')
+      error.status = 404
+      throw error
+    }
+  } catch (error) {
+    next(error)
+  }
+})
+
 app.get('/info', async (req, res) => {
   const personCount = await Person.countDocuments({})
   const dateTime = new Date().toString().substring(0, 25)
@@ -82,11 +97,11 @@ app.put('/api/persons/:id', async (request, response, next) => {
 
 
 
-app.delete('/api/persons/:id', async (request, response, next) => {
+app.delete('/api/persons/:id', async (req, res, next) => {
   try {
-    const result = await Person.findByIdAndDelete(request.params.id)
+    const result = await Person.findByIdAndDelete(req.params.id)
     if (result) {
-      response.status(204).end()
+      res.status(204).end()
     } else {
       const error = new Error('Person not found')
       error.status = 404
