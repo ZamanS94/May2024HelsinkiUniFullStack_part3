@@ -5,9 +5,9 @@ const Person = require('./models/person')
 
 require('dotenv').config()
 
-morgan.token('post_info', function (req, res) {
+morgan.token('post_info', function (req) {
   if (req.method === 'POST') {
-      return JSON.stringify(req.body)
+    return JSON.stringify(req.body)
   } else return null
 })
 
@@ -40,7 +40,7 @@ app.get('/api/persons', async (req, res, next) => {
 
 app.get('/api/persons/:id', async (req, res, next) => {
   try {
-    singlePerson = await Person.findById(req.params.id)
+    const singlePerson = await Person.findById(req.params.id)
     if (singlePerson) {
       res.json(singlePerson)
     } else {
@@ -94,9 +94,6 @@ app.put('/api/persons/:id', async (request, response, next) => {
   }
 })
 
-
-
-
 app.delete('/api/persons/:id', async (req, res, next) => {
   try {
     const result = await Person.findByIdAndDelete(req.params.id)
@@ -114,14 +111,14 @@ app.delete('/api/persons/:id', async (req, res, next) => {
 
 const errorHandler = (error, request, response, next) => {
   if (error.name === 'CastError') {
-    console.log("malformatted id")
+    console.log('malformatted id')
     response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
-    response.status(400).json({ error:error. message })
+    response.status(400).json({ error: error.message }) // Corrected error.message
   }
   else {
     console.log(`${error.message}`)
-    response.status(error.status||500).json({ error: error.message })
+    response.status(error.status || 500).json({ error: error.message })
   }
 
   next(error)
@@ -129,7 +126,8 @@ const errorHandler = (error, request, response, next) => {
 
 app.use(errorHandler)
 
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+
+
